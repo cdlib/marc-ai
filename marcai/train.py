@@ -1,12 +1,8 @@
 import argparse
-import os
-import tarfile
 import warnings
 
 import pytorch_lightning as lightning
-import torch
-import yaml
-from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
+from pytorch_lightning.callbacks import EarlyStopping
 
 from marcai.pl import MARCDataModule, SimilarityVectorModel
 from marcai.utils import load_config
@@ -14,7 +10,6 @@ from marcai.utils import load_config
 
 def train(name=None):
     config_path = "config.yaml"
-    config = load_config(config_path)
     model_config = load_config(config_path)["model"]
 
     # Create data module from processed data
@@ -32,8 +27,7 @@ def train(name=None):
         model_config["lr"],
         model_config["weight_decay"],
         model_config["optimizer"],
-        model_config["batch_size"],
-        model_config["features"]
+        model_config["batch_size"]
     )
 
     callbacks = []
