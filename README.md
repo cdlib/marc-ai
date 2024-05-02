@@ -1,6 +1,30 @@
-# MARC AI Project
+# MARC Record Matching with Bibliographic Metadata
 
-This project aims to share data and code from our investigations into using neural networks for MARC data matching. We have primarily focused on MARC records for English monographs contributed to the HathiTrust by partnering institutions. The future direction of this repository is uncertain, but we plan to develop a new dataset and model encompassing a broader range of languages and publication locations over the next year. If you would like to contribute datasets, results, or models/methods to this repository, please contact us. We are eager to connect with others working on MARC record matching.
+Check out our [pre-trained model](https://huggingface.co/cdlib/marc-match-ai) and the [interactive demo](https://huggingface.co/spaces/cdlib/marc-match-ai-demo) on HuggingFace!
+
+Traditional matching of MARC (Machine-Readable Cataloging) records has relied heavily on identifiers like OCLC numbers, ISBNs, LCCNs, etc. assigned by catalogers. However, this approach struggles with records having incorrect identifiers or lacking them altogether. This model has been developed to match MARC records based solely on their bibliographic metadata (title, author, publisher, etc.), enabling successful matches even when identifiers are missing or inaccurate.
+
+We have primarily focused on MARC records for English monographs contributed to the HathiTrust by partnering institutions. The future direction of this repository is uncertain, but we plan to develop a new dataset and model encompassing a broader range of languages and publication locations. If you would like to contribute datasets, results, or models/methods, please contact us. We are eager to connect with others working on MARC record matching.
+
+## Key Features
+- Bibliographic Metadata Matching: Performs matching based solely on bibliographic data, eliminating the need for identifiers.
+- Text Field Flexibility: Accommodates minor variations in bibliographic metadata fields for accurate matching.
+- Adjustable Matching Threshold: Allows tuning the balance between false positives and false negatives based on specific use cases.
+
+## Usage
+The `marcai` package comes with a command-line interface offering a suite of commands for processing data, training models, and making predictions. All commands have their own help functions, which can be accessed by running `marc-ai <command> --help`.
+
+### Processing data
+`marc-ai process` takes a file containing MARC records and a CSV containing indices of record comparisons, and calculates similarity scores for several fields in the MARC records. These similarity values serve as the input features to the machine learning model.
+
+### Training a model
+`marc-ai train` trains a model with the hyperparameters defined in `config.yaml`, including the paths to dataset splits.
+
+### Making predictions
+`marc-ai predict` takes the output from `marc-ai process` and a trained model, and runs the similarity scores through the model to produce match confidence scores.
+
+### Finding matches without I/O
+`marc-ai find_matches` combines the commands for processing and predicting to cut out the unnecessary step of saving similarity values to disk. This is substantially faster when working with large amounts of data.
 
 ## Analysis (Jupyter Notebooks)
 
@@ -16,7 +40,5 @@ The data is real and may contain some errors and peculiarities due to the way Ha
 
 The results folder contains our model's outcomes, as well as some basic attempts at string matching and fuzzy string matching. These findings are used by the analysis notebooks to compare and contrast the performance of various methods.
 
-## Model
 
-We have yet to determine how or when we will share the code for the model, but if we share it anywhere we will post a link here.
 

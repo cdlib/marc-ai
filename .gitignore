@@ -1,4 +1,4 @@
 .DS_Store
 datasets/**/*.json
-Pipfile
-Pipfile.lock
+__pycache__
+.ipynb_checkpoints
