@@ -1,12 +1,12 @@
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-from torchmetrics import Accuracy
 from huggingface_hub import PyTorchModelHubMixin
+from torchmetrics import Accuracy
 
 
 class SimilarityVectorModel(pl.LightningModule, PyTorchModelHubMixin):
-    def __init__(self, lr, weight_decay, optimizer, batch_size):
+    def __init__(self, lr=0.1, weight_decay=0.0, optimizer="Adam", batch_size=512):
         super().__init__()
 
         # Hyperparameters
@@ -23,7 +23,7 @@ class SimilarityVectorModel(pl.LightningModule, PyTorchModelHubMixin):
             nn.ReLU(),
             nn.Linear(64, 1),
         )
-        
+
         self.sigmoid = nn.Sigmoid()
         self.criterion = nn.BCEWithLogitsLoss()
         self.accuracy = Accuracy(task="binary")

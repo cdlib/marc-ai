@@ -33,6 +33,7 @@ def train(name=None):
         model_config["weight_decay"],
         model_config["optimizer"],
         model_config["batch_size"],
+        model_config["features"]
     )
 
     callbacks = []
@@ -51,20 +52,8 @@ def train(name=None):
     )
     trainer.fit(model, data)
 
-    # # Save config
-    # config_filename = os.path.join(save_dir, "config.yaml")
-
-    # with open(config_filename, "w") as f:
-    #     dump = yaml.dump(config)
-    #     f.write(dump)
-
-    # # Compress model directory files
-    # tar_path = f"{save_dir}/{name}.tar.gz"
-    # with tarfile.open(tar_path, mode="w:gz") as archive:
-    #     archive.add(save_dir, arcname=os.path.basename(save_dir))
-
     # Save model
-    model.save_pretrained("marc-match-ai")
+    model.save_pretrained(name)
 
 
 def args_parser():

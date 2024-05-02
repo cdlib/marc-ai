@@ -3,7 +3,9 @@ import argparse
 import numpy as np
 import onnxruntime
 import pandas as pd
+import torch
 
+from marcai.pl import SimilarityVectorModel
 from marcai.utils import load_config
 
 
@@ -23,6 +25,19 @@ def predict_onnx(model_onnx_path, data):
 
     return ort_outs
 
+
+def predict(model, data):
+    x = torch.stack(
+        [torch.tensor(data.values[i].astype(float)) for i in range(len(data))], dim=0
+    ).float()
+
+    model.eval()
+    with torch.no_grad():
+        prediction = model.predict(x)
+
+    return prediction
+
+
 def args_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -31,8 +46,8 @@ def args_parser():
     parser.add_argument("-o", "--output", help="Output path", required=True)
     parser.add_argument(
         "-m",
-        "--model-dir",
-        help="Directory containing model ONNX and YAML files",
+        "--model",
+        help="Path to the model directory",
         required=True,
     )
     parser.add_argument(
@@ -41,24 +56,26 @@ def args_parser():
         default=1024,
         type=int,
     )
+    parser.add_argument(
+        "--config",
+        help="Path to the config.yaml file",
+        default="config.yaml",
+    )
     return parser
 
 
 def main(args):
-    config_path = f"{args.model_dir}/config.yaml"
-    model_onnx = f"{args.model_dir}/model.onnx"
-
-    config = load_config(config_path)
+    # Load config.yaml
+    config = load_config(args.config)
 
     # Load data
     data = pd.read_csv(args.input, chunksize=args.chunksize)
 
+    model = SimilarityVectorModel.from_pretrained(args.model)
+
     written = False
     for chunk in data:
-        # Limit columns to model input features
-        input_df = chunk[config["model"]["features"]]
-
-        prediction = predict_onnx(model_onnx, input_df)
+        prediction = predict(model, chunk[config["model"]["features"]])
 
         # Add prediction to chunk
         chunk["prediction"] = prediction.squeeze()
