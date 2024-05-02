@@ -41,9 +41,8 @@ required arguments:
                         File containing comma separated indices of comparisons (one comparison per line)
 ```
 
-
 ### Training a model
-`marc-ai train` trains a model with the hyperparameters defined in `config.yaml`, including the paths to dataset splits.
+`marc-ai train` trains a model with the hyperparameters defined in `config.yaml`, including the paths to __processed__ dataset splits.
 ```
 usage: marc-ai train [-h] -n RUN_NAME
 
@@ -57,7 +56,7 @@ required arguments:
 A directory for the training run will be created with the model and hyperparameters.
 
 ### Making predictions
-`marc-ai predict` takes the output from `marc-ai process` and a trained model, and runs the similarity scores through the model to produce match confidence scores.
+`marc-ai predict` takes the output from `marc-ai process` and a trained model, and runs the similarity scores through the model to produce match confidence scores. By default it will use our HuggingFace pretrained model, `cdlib/marc-match-ai`.
 
 ```
 usage: marc-ai predict [-h] -i INPUT -o OUTPUT [-m MODEL] [--chunksize CHUNKSIZE] [--config CONFIG]
@@ -76,7 +75,6 @@ required arguments:
   -o OUTPUT, --output OUTPUT
                         Output path
 ```
-`model_name` can refer to the directory where a trained model was saved, or a HuggingFace pre-trained model (by default it will use our pre-trained model, `cdlib/marc-match-ai`).
 
 ### Finding matches without I/O
 `marc-ai find_matches` combines the commands for processing and predicting to cut out the unnecessary step of saving similarity values to disk. This is substantially faster when working with large amounts of data.
