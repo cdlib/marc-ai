@@ -52,7 +52,8 @@ def train(name=None):
 
 def args_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--run-name", help="Name for training run", required=True)
+    required = parser.add_argument_group("required arguments")
+    required.add_argument("-n", "--run-name", help="Name for training run", required=True)
     return parser
 
 

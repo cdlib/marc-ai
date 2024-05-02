@@ -12,24 +12,26 @@ from marcai.utils.parsing import load_records, record_dict
 
 def args_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--inputs", nargs="+", help="MARC files", required=True)
-    parser.add_argument(
+    required = parser.add_argument_group("required arguments")
+    required.add_argument("-i", "--inputs", nargs="+", help="MARC files", required=True)
+    required.add_argument(
         "-p",
         "--pair-indices",
         help="File containing indices of comparisons",
         required=True,
     )
-    parser.add_argument("-C", "--chunksize", help="Chunk size", type=int, default=50000)
-    parser.add_argument(
-        "-P", "--processes", help="Number of processes", type=int, default=1
-    )
-    parser.add_argument(
+    required.add_argument(
         "-m",
         "--model-dir",
         help="Directory containing model ONNX and YAML files",
         required=True,
     )
-    parser.add_argument("-o", "--output", help="Output file", required=True)
+    required.add_argument("-o", "--output", help="Output file", required=True)
+    
+    parser.add_argument("-C", "--chunksize", help="Chunk size", type=int, default=50000)
+    parser.add_argument(
+        "-P", "--processes", help="Number of processes", type=int, default=1
+    )
     parser.add_argument("-t", "--threshold", help="Threshold for matching", type=float)
 
     return parser

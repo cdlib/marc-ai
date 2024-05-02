@@ -5,12 +5,7 @@ from huggingface_hub import PyTorchModelHubMixin
 from torchmetrics import Accuracy
 
 
-class SimilarityVectorModel(
-    pl.LightningModule,
-    PyTorchModelHubMixin,
-    library_name="PyTorch",
-    repo_url="https://github.com/cdlib/marc-ai"    
-):
+class SimilarityVectorModel(pl.LightningModule, PyTorchModelHubMixin):
     def __init__(self, lr=0.1, weight_decay=0.0, optimizer="Adam", batch_size=512):
         super().__init__()
 

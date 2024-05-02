@@ -192,6 +192,11 @@ def args_parser():
     required = parser.add_argument_group("required arguments")
     required.add_argument("-i", "--inputs", nargs="+", help="MARC files", required=True)
     required.add_argument("-o", "--output", help="Output file", required=True)
+    required.add_argument(
+        "-p",
+        "--pair-indices",
+        help="File containing comma separated indices of comparisons (one comparison per line)",
+    )
 
     parser.add_argument(
         "-C",
@@ -200,9 +205,7 @@ def args_parser():
         help="Number of comparisons per job",
         default=50000,
     )
-    parser.add_argument(
-        "-p", "--pair-indices", help="File containing indices of comparisons"
-    )
+
     parser.add_argument(
         "-P",
         "--processes",

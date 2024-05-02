@@ -40,10 +40,12 @@ def predict(model, data):
 
 def args_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
+
+    required = parser.add_argument_group("required arguments")
+    required.add_argument(
         "-i", "--input", help="Path to preprocessed data file", required=True
     )
-    parser.add_argument("-o", "--output", help="Output path", required=True)
+    required.add_argument("-o", "--output", help="Output path", required=True)
     parser.add_argument(
         "-m",
         "--model",
