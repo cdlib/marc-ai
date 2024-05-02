@@ -47,8 +47,8 @@ def args_parser():
     parser.add_argument(
         "-m",
         "--model",
-        help="Path to the model directory",
-        required=True,
+        help="Path to the model directory, or HuggingFace model name",
+        default="cdlib/marc-match-ai",
     )
     parser.add_argument(
         "--chunksize",
