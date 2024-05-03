@@ -33,7 +33,7 @@ def predict(model, data):
 
     model.eval()
     with torch.no_grad():
-        prediction = model.predict(x)
+        prediction = model.predict(x).detach().numpy()
 
     return prediction
 
