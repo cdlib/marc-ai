@@ -15,6 +15,7 @@ We have primarily focused on MARC records for English monographs contributed to 
 Installing the `marcai` package is as simple as cloning and installing the package:
 ```
 git clone https://github.com/cdlib/marc-ai.git
+cd marc-ai
 pip install .
 ```
 
