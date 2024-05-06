@@ -6,7 +6,6 @@ import pandas as pd
 import torch
 
 from marcai.pl import SimilarityVectorModel
-from marcai.utils import load_config
 
 
 def sigmoid(x):
@@ -58,17 +57,10 @@ def args_parser():
         default=1024,
         type=int,
     )
-    parser.add_argument(
-        "--config",
-        help="Path to the config.yaml file",
-        default="config.yaml",
-    )
     return parser
 
 
 def main(args):
-    # Load config.yaml
-    config = load_config(args.config)
 
     # Load data
     data = pd.read_csv(args.input, chunksize=args.chunksize)
@@ -77,7 +69,7 @@ def main(args):
 
     written = False
     for chunk in data:
-        prediction = predict(model, chunk[config["model"]["features"]])
+        prediction = predict(model, chunk[model.features])
 
         # Add prediction to chunk
         chunk["prediction"] = prediction.squeeze()

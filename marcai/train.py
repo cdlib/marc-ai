@@ -27,7 +27,8 @@ def train(name=None):
         model_config["lr"],
         model_config["weight_decay"],
         model_config["optimizer"],
-        model_config["batch_size"]
+        model_config["batch_size"],
+        model_config["features"]
     )
 
     callbacks = []

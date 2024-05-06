@@ -6,7 +6,7 @@ from torchmetrics import Accuracy
 
 
 class SimilarityVectorModel(pl.LightningModule, PyTorchModelHubMixin):
-    def __init__(self, lr=0.1, weight_decay=0.0, optimizer="Adam", batch_size=512):
+    def __init__(self, *, lr, weight_decay, optimizer, batch_size, features):
         super().__init__()
 
         # Hyperparameters
@@ -14,10 +14,11 @@ class SimilarityVectorModel(pl.LightningModule, PyTorchModelHubMixin):
         self.weight_decay = weight_decay
         self.optimizer = optimizer
         self.batch_size = batch_size
+        self.features = features
         self.save_hyperparameters()
 
         self.layers = nn.Sequential(
-            nn.Linear(7, 32),
+            nn.Linear(len(features), 32),
             nn.ReLU(),
             nn.Linear(32, 64),
             nn.ReLU(),
