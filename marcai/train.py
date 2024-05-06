@@ -24,11 +24,11 @@ def train(name=None):
 
     # Create model
     model = SimilarityVectorModel(
-        model_config["lr"],
-        model_config["weight_decay"],
-        model_config["optimizer"],
-        model_config["batch_size"],
-        model_config["features"]
+        lr=model_config["lr"],
+        weight_decay=model_config["weight_decay"],
+        optimizer=model_config["optimizer"],
+        batch_size=model_config["batch_size"],
+        features=model_config["features"]
     )
 
     callbacks = []
