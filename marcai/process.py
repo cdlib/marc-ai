@@ -103,10 +103,6 @@ def process(df0, df1):
     result_df["id_0"] = df0["id"]
     result_df["id_1"] = df1["id"]
 
-    result_df["raw_tokenset"] = comps.token_set_similarity(
-        df0["raw"], df1["raw"], null_value=0.5
-    )
-
     # Token sort ratio
     result_df["publisher"] = comps.token_sort_similarity(
         df0["publisher"], df1["publisher"], null_value=0.5
@@ -133,33 +129,8 @@ def process(df0, df1):
         df0[weights.keys()], df1[weights.keys()], weights.values(), null_value=0
     )
 
-    # Length difference
-    result_df["title_length"] = comps.length_similarity(
-        df0["title"], df1["title"], null_value=0.5
-    )
-
     # Token set similarity
     result_df["title_tokenset"] = comps.token_set_similarity(
-        df0["title"], df1["title"], null_value=0
-    )
-
-    # Token sort ratio
-    result_df["title_tokensort"] = comps.token_sort_similarity(
-        df0["title"], df1["title"], null_value=0
-    )
-
-    # Levenshtein
-    result_df["title_levenshtein"] = comps.levenshtein_similarity(
-        df0["title"], df1["title"], null_value=0
-    )
-
-    # Jaro
-    result_df["title_jaro"] = comps.jaro_similarity(
-        df0["title"], df1["title"], null_value=0
-    )
-
-    # Jaro Winkler
-    result_df["title_jaro_winkler"] = comps.jaro_winkler_similarity(
         df0["title"], df1["title"], null_value=0
     )
 
