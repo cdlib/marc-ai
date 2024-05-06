@@ -12,7 +12,11 @@ We have primarily focused on MARC records for English monographs contributed to 
 - Adjustable Matching Threshold: Allows tuning the balance between false positives and false negatives based on specific use cases.
 
 ## Installation
-Installing the `marcai` package is as simple as cloning and installing the package:
+The easiest way is to just install this GitHub repository as a Python package:
+```
+pip install git+https://github.com/cdlib/marc-ai.git
+```
+Alternatively, you can clone and install the package yourself.
 ```
 git clone https://github.com/cdlib/marc-ai.git
 cd marc-ai
