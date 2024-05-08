@@ -67,7 +67,8 @@ A directory for the training run will be created with the model and hyperparamet
 `marc-ai predict` takes the output from `marc-ai process` and a trained model, and runs the similarity scores through the model to produce match confidence scores. By default it will use our HuggingFace pretrained model, `cdlib/marc-match-ai`.
 
 ```
-usage: marc-ai predict [-h] -i INPUT -o OUTPUT [-m MODEL] [--chunksize CHUNKSIZE] [--config CONFIG]
+usage: marc-ai predict [-h] -i INPUT -o OUTPUT [-m MODEL]
+                       [--chunksize CHUNKSIZE]
 
 options:
   -h, --help            show this help message and exit
@@ -75,7 +76,6 @@ options:
                         Path to the model directory, or HuggingFace model name
   --chunksize CHUNKSIZE
                         Chunk size for reading and predicting
-  --config CONFIG       Path to the config.yaml file
 
 required arguments:
   -i INPUT, --input INPUT
