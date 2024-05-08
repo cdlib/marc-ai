@@ -26,6 +26,8 @@ pip install .
 ## Usage
 The `marcai` package comes with a command-line interface offering a suite of commands for processing data, training models, and making predictions. All commands have their own help functions, which can be accessed by running `marc-ai <command> --help`.
 
+To run the machine learning model on pairs of MARC records to compare them, the first step is to [process](#processing-data) the pairs of records to generate the numerical input to the model. These numbers are the similarity values for chosen fields of the MARC records. Then you can [generate predictions](#making-predictions) to run the model and add predictions/confidence scores to the CSV.
+
 ### Processing data
 `marc-ai process` takes a file containing MARC records and a CSV containing indices of record comparisons, and calculates similarity scores for several fields in the MARC records. These similarity values serve as the input features to the machine learning model.
 ```
@@ -82,18 +84,19 @@ required arguments:
                         Output path
 ```
 
-### Finding matches without I/O
-`marc-ai find_matches` combines the commands for processing and predicting to cut out the unnecessary step of saving similarity values to disk. This is substantially faster when working with large amounts of data.
+### Processing and predicting without I/O
+`marc-ai pipeline` combines the commands for processing and predicting to cut out the unnecessary step of saving similarity values to disk. This is substantially faster when working with large amounts of data.
 ```
-usage: marc-ai find_matches [-h] -i INPUTS [INPUTS ...] -p PAIR_INDICES -m MODEL_DIR -o OUTPUT [-C CHUNKSIZE]
-                            [-P PROCESSES] [-t THRESHOLD]
+usage: marc-ai pipeline [-h] -i INPUTS [INPUTS ...] -p PAIR_INDICES -o OUTPUT [-m MODEL] [-C CHUNKSIZE] [-P PROCESSES] [-t THRESHOLD]
 
 options:
   -h, --help            show this help message and exit
+  -m MODEL, --model MODEL
+                        Path to the model directory, or HuggingFace model name
   -C CHUNKSIZE, --chunksize CHUNKSIZE
                         Chunk size
   -P PROCESSES, --processes PROCESSES
-                        Number of processes
+                        Number of processes for processing
   -t THRESHOLD, --threshold THRESHOLD
                         Threshold for matching
 
@@ -102,11 +105,12 @@ required arguments:
                         MARC files
   -p PAIR_INDICES, --pair-indices PAIR_INDICES
                         File containing indices of comparisons
-  -m MODEL_DIR, --model-dir MODEL_DIR
-                        Directory containing model ONNX and YAML files
   -o OUTPUT, --output OUTPUT
                         Output file
 ```
+
+## Performance and Scalability
+Many optimizations were made to processing and predicting to make them fast, but because the model compares individual pairs of records, the number of comparisons grows quadratically with the number of records. Because of this, we recommend using some kind of blocking to ignore comparisons of records that are unlikely to match. We have had success using token blocking on the title fields of MARC records, using only the bottom 70% of total words by occurrence. This significantly cut down on comparisons while retaining high recall.
 
 ## Analysis (Jupyter Notebooks)
 

@@ -1,5 +1,5 @@
 import argparse
-from . import train, predict, process, find_matches
+from . import train, predict, process, pipeline
 
 
 def main():
@@ -20,17 +20,17 @@ def main():
     process_parser = subparsers.add_parser(
         "process", parents=[process.args_parser()], help="Process data", add_help=False
     )
-    find_matches_parser = subparsers.add_parser(
-        "find_matches",
-        parents=[find_matches.args_parser()],
-        help="Find matches in data",
+    pipeline_parser = subparsers.add_parser(
+        "pipeline",
+        parents=[pipeline.args_parser()],
+        help="Run processing and predicting on data",
         add_help=False,
     )
 
     train_parser.set_defaults(func=train.main)
     predict_parser.set_defaults(func=predict.main)
     process_parser.set_defaults(func=process.main)
-    find_matches_parser.set_defaults(func=find_matches.main)
+    pipeline_parser.set_defaults(func=pipeline.main)
 
     args = parser.parse_args()
     args.func(args)
