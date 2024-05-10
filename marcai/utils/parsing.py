@@ -32,9 +32,6 @@ def get_record_values(record, location):
 def record_dict(record):
     d = OrderedDict()
 
-    # Dump every field value into a string
-    d["raw"] = " ".join([f.value() for f in record.fields])
-
     d["cid"] = get_record_values(record, "CID")
     d["id"] = get_record_values(record, "001")
 
@@ -52,10 +49,6 @@ def record_dict(record):
 
     d["title_variation_a"] = get_record_values(record, "246$a")
     d["title_variation_b"] = get_record_values(record, "246$b")
-
-    d["subject_headings"] = " ".join(
-        get_record_values(record, "650$a") + get_record_values(record, "650$x")
-    )
 
     d["author_names"] = " ".join(
         [get_record_values(record, "100$a"), get_record_values(record, "700$a")]
