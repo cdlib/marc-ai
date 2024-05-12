@@ -123,7 +123,17 @@ def process(df0, df1):
     result_df["author"] = comps.maximum(authors, null_value=0.5)
 
     # Weighted title comparison
-    weights = {"title_a": 1, "raw": 0, "title_p": 1}
+    weights = {
+        "title_a": 1,
+        "title_b": 0,
+        "title_c": 0,
+        "title_variation_a": 0,
+        "title_variation_b": 0,
+        "author_names": 0,
+        "corporate_names": 0,
+        "meeting_names": 0,
+        "title_p": 1
+    }
 
     result_df["title_agg"] = comps.column_aggregate_similarity(
         df0[weights.keys()], df1[weights.keys()], weights.values(), null_value=0
