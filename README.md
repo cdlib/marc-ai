@@ -1,130 +1,135 @@
-# MARC Record Matching with Bibliographic Metadata
+# MARC-AI: MARC Record Matching with Bibliographic Metadata
 
-Check out our [pre-trained model](https://huggingface.co/cdlib/marc-match-ai) and [interactive demo](https://huggingface.co/spaces/cdlib/marc-match-ai-demo) on HuggingFace!
+A machine learning system for matching and deduplicating MARC (Machine-Readable Cataloging) bibliographic records based solely on their metadata content, without relying on identifiers.
 
-Traditional matching of MARC (Machine-Readable Cataloging) records has relied heavily on identifiers like OCLC numbers, ISBNs, LCCNs, etc. assigned by catalogers. However, this approach struggles with records having incorrect identifiers or lacking them altogether. This model has been developed to match MARC records based solely on their bibliographic metadata (title, author, publisher, etc.), enabling successful matches even when identifiers are missing or inaccurate.
+[![Hugging Face Model](https://img.shields.io/badge/🤗%20Hugging%20Face-Model-yellow)](https://huggingface.co/cdlib/marc-match-ai)
+[![Hugging Face Demo](https://img.shields.io/badge/🤗%20Hugging%20Face-Demo-blue)](https://huggingface.co/spaces/cdlib/marc-match-ai-demo)
 
-We have primarily focused on MARC records for English monographs contributed to the HathiTrust by partnering institutions. The future direction of this repository is uncertain, but we plan to develop a new dataset and model encompassing a broader range of languages and publication locations. If you would like to contribute datasets, results, or models/methods, please contact us. We are eager to connect with others working on MARC record matching.
+## Overview
+
+Traditional matching of MARC records has relied heavily on identifiers like OCLC numbers, ISBNs, or LCCNs. However, this approach struggles with records having incorrect identifiers or lacking them altogether. MARC-AI matches records based solely on bibliographic metadata (title, author, publisher, etc.), enabling successful matches even when identifiers are missing or inaccurate.
 
 ## Key Features
-- Bibliographic Metadata Matching: Performs matching based solely on bibliographic data, eliminating the need for identifiers.
-- Text Field Flexibility: Accommodates minor variations in bibliographic metadata fields for accurate matching.
-- Adjustable Matching Threshold: Allows tuning the balance between false positives and false negatives based on specific use cases.
+
+- **Bibliographic Metadata Matching**: Performs matching based solely on bibliographic data
+- **Text Field Flexibility**: Handles minor variations in metadata fields through normalization and various similarity metrics
+- **Adjustable Matching Threshold**: Customizable threshold to balance precision and recall
+- **Hard Negative Mining**: Improves model training by focusing on difficult examples
+- **Scalable Processing**: Multiprocessing support for handling large datasets
+
+## System Architecture
+
+MARC-AI consists of several interconnected components:
+
+1. **Processing Pipeline**:
+   - Loads and normalizes MARC records
+   - Generates similarity features between record pairs
+   - Applies various text normalization techniques (lowercase, punctuation removal, diacritics removal)
+
+2. **Machine Learning Model**:
+   - Multi-layer perceptron trained on labeled record pairs
+   - Predicts match probability based on field similarities
+   - Built with PyTorch Lightning for reproducibility and scalability
+
+3. **CLI Interface**:
+   - `process`: Generate similarity features from MARC record pairs
+   - `train`: Train a new model with configurable hyperparameters
+   - `predict`: Apply trained model to predict matches
+   - `pipeline`: End-to-end workflow from raw records to predictions
 
 ## Installation
-The easiest way is to just install this GitHub repository as a Python package:
-```
+
+```bash
+# Install directly from GitHub
 pip install git+https://github.com/cdlib/marc-ai.git
-```
-Alternatively, you can clone and install the package yourself.
-```
+
+# Or clone and install
 git clone https://github.com/cdlib/marc-ai.git
 cd marc-ai
 pip install .
 ```
 
 ## Usage
-The `marcai` package comes with a command-line interface offering a suite of commands for processing data, training models, and making predictions. All commands have their own help functions, which can be accessed by running `marc-ai <command> --help`.
 
-To run the machine learning model on pairs of MARC records to compare them, the first step is to [process](#processing-data) the pairs of records to generate the numerical input to the model. These numbers are the similarity values for chosen fields of the MARC records. Then you can [generate predictions](#making-predictions) to run the model and add predictions/confidence scores to the CSV.
+### Processing Data
 
-### Processing data
-`marc-ai process` takes a file containing MARC records and a CSV containing indices of record comparisons, and calculates similarity scores for several fields in the MARC records. These similarity values serve as the input features to the machine learning model.
-```
-usage: marc-ai process [-h] -i INPUTS [INPUTS ...] -o OUTPUT [-p PAIR_INDICES] [-C CHUNKSIZE] [-P PROCESSES]
+Generate similarity features from MARC records:
 
-options:
-  -h, --help            show this help message and exit
-  -C CHUNKSIZE, --chunksize CHUNKSIZE
-                        Number of comparisons per job
-  -P PROCESSES, --processes PROCESSES
-                        Number of processes to run in parallel.
-
-required arguments:
-  -i INPUTS [INPUTS ...], --inputs INPUTS [INPUTS ...]
-                        MARC files
-  -o OUTPUT, --output OUTPUT
-                        Output file
-  -p PAIR_INDICES, --pair-indices PAIR_INDICES
-                        File containing comma separated indices of comparisons (one comparison per line)
+```bash
+marc-ai process -i MARC_FILES... -o OUTPUT_CSV -p PAIR_INDICES [-C CHUNKSIZE] [-P PROCESSES]
 ```
 
-### Training a model
-`marc-ai train` trains a model with the hyperparameters defined in `config.yaml`, including the paths to __processed__ dataset splits.
-```
-usage: marc-ai train [-h] -n RUN_NAME
+### Training a Model
 
-options:
-  -h, --help            show this help message and exit
+Train with hyperparameters from `config.yaml`:
 
-required arguments:
-  -n RUN_NAME, --run-name RUN_NAME
-                        Name for training run
-```
-A directory for the training run will be created with the model and hyperparameters.
-
-### Making predictions
-`marc-ai predict` takes the output from `marc-ai process` and a trained model, and runs the similarity scores through the model to produce match confidence scores. By default it will use our HuggingFace pretrained model, `cdlib/marc-match-ai`.
-
-```
-usage: marc-ai predict [-h] -i INPUT -o OUTPUT [-m MODEL]
-                       [--chunksize CHUNKSIZE]
-
-options:
-  -h, --help            show this help message and exit
-  -m MODEL, --model MODEL
-                        Path to the model directory, or HuggingFace model name
-  --chunksize CHUNKSIZE
-                        Chunk size for reading and predicting
-
-required arguments:
-  -i INPUT, --input INPUT
-                        Path to preprocessed data file
-  -o OUTPUT, --output OUTPUT
-                        Output path
+```bash
+marc-ai train -n RUN_NAME
 ```
 
-### Processing and predicting without I/O
-`marc-ai pipeline` combines the commands for processing and predicting to cut out the unnecessary step of saving similarity values to disk. This is substantially faster when working with large amounts of data.
+### Making Predictions
+
+Apply a trained model to processed data:
+
+```bash
+marc-ai predict -i INPUT_CSV -o OUTPUT_CSV [-m MODEL_PATH]
 ```
-usage: marc-ai pipeline [-h] -i INPUTS [INPUTS ...] -p PAIR_INDICES -o OUTPUT [-m MODEL] [-C CHUNKSIZE] [-P PROCESSES] [-t THRESHOLD]
 
-options:
-  -h, --help            show this help message and exit
-  -m MODEL, --model MODEL
-                        Path to the model directory, or HuggingFace model name
-  -C CHUNKSIZE, --chunksize CHUNKSIZE
-                        Chunk size
-  -P PROCESSES, --processes PROCESSES
-                        Number of processes for processing
-  -t THRESHOLD, --threshold THRESHOLD
-                        Threshold for matching
+### End-to-End Pipeline
 
-required arguments:
-  -i INPUTS [INPUTS ...], --inputs INPUTS [INPUTS ...]
-                        MARC files
-  -p PAIR_INDICES, --pair-indices PAIR_INDICES
-                        File containing indices of comparisons
-  -o OUTPUT, --output OUTPUT
-                        Output file
+Process MARC records and predict matches in one step:
+
+```bash
+marc-ai pipeline -i MARC_FILES... -p PAIR_INDICES -o OUTPUT_CSV [-m MODEL_PATH] [-C CHUNKSIZE] [-P PROCESSES] [-t THRESHOLD]
+```
+
+## Configuration
+
+The `config.yaml` file controls model architecture and training:
+
+```yaml
+model:
+  # Input features
+  features:
+    - title_tokenset
+    - title_agg
+    - author
+    - publisher
+    - pub_date
+    - pub_place
+    - pagination
+  
+  # Training parameters
+  batch_size: 512
+  weight_decay: 0.0
+  max_epochs: -1
+  patience: 20
+  lr: 0.006
+  optimizer: Adam
+  
+  # Hard negative mining
+  use_hard_negative_mining: true
+  hard_negative_weight: 3.0
+  mining_threshold: 0.7
+  mining_frequency: 2
 ```
 
 ## Performance and Scalability
-Many optimizations were made to processing and predicting to make them fast, but because the model compares individual pairs of records, the number of comparisons grows quadratically with the number of records. Because of this, we recommend using some kind of blocking to ignore comparisons of records that are unlikely to match. We have had success using token blocking on the title fields of MARC records, using only the bottom 70% of total words by occurrence. This significantly cut down on comparisons while retaining high recall.
 
-## Analysis (Jupyter Notebooks)
-
-We have provided Jupyter notebooks containing analyses conducted during this project. The purpose of these notebooks is to examine the dataset and our current model results, as well as to share the methodologies employed throughout the project.
+The system is optimized for processing large datasets, but since record matching grows quadratically with the number of records, we recommend using blocking strategies to reduce comparison pairs. Token blocking on title fields (using only the bottom 70% of words by occurrence) has proven effective at reducing comparisons while maintaining high recall.
 
 ## Dataset
 
-The initial dataset originates from HathiTrust contributors; however, the records have been anonymized, with identifiers and custom fields removed. This dataset was specifically designed to create and evaluate record pairing methods based on content alone, making it unsuitable for pairing records using both content and identifiers or evaluating the entire HathiTrust collection. The HathiTrust data is licensed under CC0, with certain caveats detailed in the [LICENSE.md](datasets/ht/LICENSE.md) file.
+The training dataset originates from HathiTrust contributors, with records anonymized by removing identifiers and custom fields. This dataset is designed for evaluating record pairing methods based on content alone. The data is licensed under CC0 with caveats detailed in `datasets/ht/LICENSE.md`.
 
-The data is real and may contain some errors and peculiarities due to the way HathiTrust combines monograph records. We plan to collaborate with HathiTrust to make this dataset more accessible to a wider audience, perhaps on Hugging Face. We welcome feedback on the format or any issues to improve its usefulness.
+## Analysis
+
+Jupyter notebooks in the `analysis/` directory provide insights into dataset characteristics and model performance.
 
 ## Results
 
-The results folder contains our model's outcomes, as well as some basic attempts at string matching and fuzzy string matching. These findings are used by the analysis notebooks to compare and contrast the performance of various methods.
+The `results/` folder contains model outcomes and baseline comparisons using string matching methods.
 
+## Contributing
 
-
+We welcome contributions including datasets, new matching methods, or performance improvements. If you'd like to contribute, please contact us.
